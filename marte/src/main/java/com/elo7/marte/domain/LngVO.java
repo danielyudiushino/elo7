@@ -1,6 +1,8 @@
 package com.elo7.marte.domain;
 
 public class LngVO {
+	
+	public static LngVO ZERO = new LngVO(0);
 
 	private int value;
 
@@ -19,6 +21,14 @@ public class LngVO {
 	
 	public int minus() {
 		return --value;
+	}
+	
+	public boolean isBiggerThan(LngVO lat) {
+		return this.value > lat.value; 
+	}
+	
+	public boolean isLessThan(LngVO lat) {
+		return this.value < lat.value; 
 	}
 
 }
