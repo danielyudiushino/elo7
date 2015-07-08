@@ -1,13 +1,12 @@
-package com.elo7.marte.domain;
+package com.elo7.marte.domain.ria.vo;
 
-
-public class LatVO {
-
-	public static LatVO ZERO = new LatVO(0);
+public class LngVO {
 	
+	public static LngVO ZERO = new LngVO(0);
+
 	private int value;
 
-	public LatVO(int value) {
+	public LngVO(int value) {
 		super();
 		this.value = value;
 	}
@@ -24,13 +23,12 @@ public class LatVO {
 		return --value;
 	}
 	
-	public boolean isBiggerThan(LatVO lat) {
+	public boolean isBiggerThan(LngVO lat) {
 		return this.value > lat.value; 
 	}
 	
-	public boolean isLessThan(LatVO lat) {
+	public boolean isLessThan(LngVO lat) {
 		return this.value < lat.value; 
 	}
-
 
 }

@@ -1,4 +1,6 @@
-package com.elo7.marte.domain;
+package com.elo7.marte.domain.ria.state;
+
+import com.elo7.marte.domain.ria.Command;
 
 public class StateFactory {
 	

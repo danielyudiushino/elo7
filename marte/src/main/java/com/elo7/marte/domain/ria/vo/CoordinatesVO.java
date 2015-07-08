@@ -1,11 +1,12 @@
-package com.elo7.marte.domain;
+package com.elo7.marte.domain.ria.vo;
 
-public class Coordinates {
+
+public class CoordinatesVO {
 	
 	private LatVO lat;
 	private LngVO lng;
 	
-	public Coordinates(int lat, int lng) {
+	public CoordinatesVO(int lat, int lng) {
 		this.lat = new LatVO(lat);
 		this.lng = new LngVO(lng);
 	}

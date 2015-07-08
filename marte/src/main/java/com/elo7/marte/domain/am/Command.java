@@ -1,4 +1,4 @@
-package com.elo7.marte.domain;
+package com.elo7.marte.domain.am;
 
 public enum Command {
 	
