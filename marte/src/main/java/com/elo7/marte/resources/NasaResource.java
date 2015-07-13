@@ -1,11 +1,16 @@
 package com.elo7.marte.resources;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+import org.jboss.resteasy.annotations.GZIP;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Component;
 
 import com.elo7.marte.domain.Explorer;
 import com.elo7.marte.domain.Plateau;
@@ -15,35 +20,45 @@ import com.elo7.marte.resources.ro.ExplorerRO;
 import com.elo7.marte.resources.ro.PlateauRO;
 import com.elo7.marte.util.Converter;
 
-@RestController
-@RequestMapping("/")
+@Path("/")
+@Component
+@Produces({MediaType.APPLICATION_JSON})
+@Consumes({MediaType.APPLICATION_JSON})
 public class NasaResource {
 
 	@Autowired
 	private NasaService nasaService;
 
-	@RequestMapping(value = "/plateau", method = RequestMethod.POST)
-	Object createPlateau(@RequestBody PlateauRO input) {
+	@POST
+	@GZIP
+	@Path("/plateau")
+	Object createPlateau(PlateauRO input) {
 		return nasaService.definePlateau(new CoordinatesVO(input.getLat(),
 				input.getLng()));
 	}
 
-	@RequestMapping(value = "/explorer", method = RequestMethod.POST)
-	ExplorerRO createExplorer(@RequestBody ExplorerRO input) {
+	@POST
+	@GZIP
+	@Path("/explorer")
+	ExplorerRO createExplorer(ExplorerRO input) {
 		Plateau plateau = nasaService.findPlateau(input.getPlateauId());
 		Explorer explorer = nasaService.createExplorer(plateau,
 				new CoordinatesVO(input.getLat(), input.getLng()), input.getDirection());
 		return Converter.convert(explorer, ExplorerRO.class);
 	}
 
-	@RequestMapping(value = "/explorer/{id}/move", method = RequestMethod.POST)
-	void move(@PathVariable int id,	@RequestBody String command) throws Exception {
+	@POST
+	@GZIP
+	@Path("/explorer/{id}/move")
+	void move(@PathParam(value = "id") int id, String command) throws Exception {
 		Explorer explorer = nasaService.findExplorer(id);
 		nasaService.move(explorer, command);
 	}
 
-	@RequestMapping(value = "/explorer/{id}", method = RequestMethod.GET)
-	ExplorerRO get(@PathVariable int id) {
+	@GET
+	@GZIP
+	@Path("/explorer/{id}/move")
+	ExplorerRO get(@PathParam(value = "id") int id) {
 		Explorer explorer = nasaService.findExplorer(id);
 		return Converter.convert(explorer, ExplorerRO.class);
 	}
