@@ -14,12 +14,4 @@ public enum Command {
 		return value;
 	}
 	
-	public static Command get(String value) {
-		for(Command command : values()) {
-			if(command.value.equals(value))
-				return command;
-		}
-		return null;
-	}
-	
 }

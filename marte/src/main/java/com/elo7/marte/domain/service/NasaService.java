@@ -8,8 +8,9 @@ import com.elo7.marte.domain.Explorer;
 import com.elo7.marte.domain.Plateau;
 import com.elo7.marte.domain.repository.ExplorerRepository;
 import com.elo7.marte.domain.repository.PlateauRepository;
-import com.elo7.marte.domain.state.StateFactory;
 import com.elo7.marte.domain.vo.CoordinatesVO;
+import com.elo7.marte.exception.BusinessException;
+import com.elo7.marte.exception.NotFoundException;
 
 @Service("com.elo7.marte.domain.ria.NasaService")
 @Transactional
@@ -21,23 +22,32 @@ public class NasaService {
 	private ExplorerRepository explorerRepository;
 	
 	public Plateau definePlateau(CoordinatesVO coordinates) {
-		return new Plateau(coordinates).save(plateauRepository);
+		return new Plateau(coordinates).validate().save(plateauRepository);
 	}
 	
-	public Explorer createExplorer(Plateau plateau, CoordinatesVO coordinates, String state) {
-		return new Explorer(plateau, coordinates, StateFactory.directionFactory(state)).save(explorerRepository);
+	public Explorer createExplorer(int plateauId, CoordinatesVO coordinates, String state) {
+		Plateau plateau = plateauRepository.find(plateauId);
+		if(plateau == null)
+			throw new BusinessException("Plateau not Found");
+		return new Explorer(plateau, coordinates, state).validate().save(explorerRepository);
 	}
 	
-	public Explorer move(Explorer explorer, String command) throws Exception {
-		explorer.move(command).save(explorerRepository);
+	public Explorer move(Explorer explorer, String command) {
+		explorer.move(command).validate().save(explorerRepository);
 		return explorer;
 	}
 	
 	public Plateau findPlateau(int id) {
-		return plateauRepository.find(id);
+		Plateau plateau = plateauRepository.find(id);
+		if(plateau == null)
+			throw new NotFoundException("Plateau not Found");
+		return plateau;
 	}
 	
 	public Explorer findExplorer(int id) {
-		return explorerRepository.find(id);
+		Explorer explorer = explorerRepository.find(id);
+		if(explorer == null)
+			throw new NotFoundException("Explorer not Found");
+		return explorer;
 	}
 }

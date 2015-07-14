@@ -2,18 +2,12 @@ package com.elo7.marte.domain.state;
 
 import com.elo7.marte.domain.Direction;
 import com.elo7.marte.domain.vo.CoordinatesVO;
-import com.elo7.marte.domain.vo.LngVO;
 
 public class SouthState implements State {
 
 	@Override
 	public CoordinatesVO move(CoordinatesVO coordinates) {
 		return new CoordinatesVO(coordinates.getLat().getValue(), coordinates.getLng().minus());
-	}
-	
-	@Override
-	public boolean canMove(CoordinatesVO plateauCoordinates, CoordinatesVO coordinates) {
-		return coordinates.getLng().isBiggerThan(LngVO.ZERO);
 	}
 	
 	@Override

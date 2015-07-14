@@ -30,5 +30,17 @@ public class LngVO {
 	public boolean isLessThan(LngVO lat) {
 		return this.value < lat.value; 
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == this) {
+			return true;
+		}
+		if(obj instanceof LngVO) {
+			LngVO ob = (LngVO)obj;
+			return value==ob.value;
+		}
+		return false;
+	}
 
 }

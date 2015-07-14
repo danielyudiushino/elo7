@@ -1,6 +1,7 @@
 package com.elo7.marte.domain.vo;
 
 
+
 public class CoordinatesVO {
 	
 	private LatVO lat;
@@ -27,6 +28,18 @@ public class CoordinatesVO {
 
 	public void setLng(LngVO lng) {
 		this.lng = lng;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == this) {
+			return true;
+		}
+		if(obj instanceof CoordinatesVO) {
+			CoordinatesVO ob = (CoordinatesVO)obj;
+			return lat.equals(ob.lat) && lng.equals(ob.lng);
+		}
+		return false;
 	}
 	
 }

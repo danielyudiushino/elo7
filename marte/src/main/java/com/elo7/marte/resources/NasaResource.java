@@ -1,16 +1,16 @@
 package com.elo7.marte.resources;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import java.net.URI;
 
-import org.jboss.resteasy.annotations.GZIP;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.elo7.marte.domain.Explorer;
 import com.elo7.marte.domain.Plateau;
@@ -20,47 +20,52 @@ import com.elo7.marte.resources.ro.ExplorerRO;
 import com.elo7.marte.resources.ro.PlateauRO;
 import com.elo7.marte.util.Converter;
 
-@Path("/")
-@Component
-@Produces({MediaType.APPLICATION_JSON})
-@Consumes({MediaType.APPLICATION_JSON})
+@RestController
 public class NasaResource {
 
 	@Autowired
 	private NasaService nasaService;
 
-	@POST
-	@GZIP
-	@Path("/plateau")
-	Object createPlateau(PlateauRO input) {
-		return nasaService.definePlateau(new CoordinatesVO(input.getLat(),
-				input.getLng()));
+	@RequestMapping(value = "/plateau", method = RequestMethod.POST)
+	@ResponseBody ResponseEntity<PlateauRO> createPlateau(@RequestBody PlateauRO input) {
+		Plateau plateau = nasaService.definePlateau(new CoordinatesVO(input.getLat(),	input.getLng()));
+		
+		final URI location = ServletUriComponentsBuilder
+	            .fromCurrentServletMapping().path("/plateau/{id}").build()
+	            .expand(plateau.getId()).toUri();
+		
+		return ResponseEntity.created(location).body(Converter.convert(plateau, PlateauRO.class));
 	}
 
-	@POST
-	@GZIP
-	@Path("/explorer")
-	ExplorerRO createExplorer(ExplorerRO input) {
-		Plateau plateau = nasaService.findPlateau(input.getPlateauId());
-		Explorer explorer = nasaService.createExplorer(plateau,
+	@RequestMapping(value = "/explorer", method = RequestMethod.POST)
+	@ResponseBody ResponseEntity<ExplorerRO> createExplorer(@RequestBody ExplorerRO input) {
+		Explorer explorer = nasaService.createExplorer(input.getPlateauId(),
 				new CoordinatesVO(input.getLat(), input.getLng()), input.getDirection());
-		return Converter.convert(explorer, ExplorerRO.class);
+		
+		final URI location = ServletUriComponentsBuilder
+	            .fromCurrentServletMapping().path("/explorer/{id}").build()
+	            .expand(explorer.getId()).toUri();
+		
+		return ResponseEntity.created(location).body(Converter.convert(explorer, ExplorerRO.class));
 	}
 
-	@POST
-	@GZIP
-	@Path("/explorer/{id}/move")
-	void move(@PathParam(value = "id") int id, String command) throws Exception {
+	@RequestMapping(value = "/explorer/{id}/move", method = RequestMethod.PUT)
+	@ResponseBody ResponseEntity<Void> move(@PathVariable int id, @RequestBody String command) throws Exception {
 		Explorer explorer = nasaService.findExplorer(id);
 		nasaService.move(explorer, command);
+		return ResponseEntity.noContent().build();
 	}
 
-	@GET
-	@GZIP
-	@Path("/explorer/{id}/move")
-	ExplorerRO get(@PathParam(value = "id") int id) {
+	@RequestMapping(value = "/explorer/{id}", method = RequestMethod.GET)
+	@ResponseBody ResponseEntity<ExplorerRO> getExplorer(@PathVariable int id) {
 		Explorer explorer = nasaService.findExplorer(id);
-		return Converter.convert(explorer, ExplorerRO.class);
+		return ResponseEntity.ok(Converter.convert(explorer, ExplorerRO.class));
 	}
-
+	
+	@RequestMapping(value = "/plateau/{id}", method = RequestMethod.GET)
+	@ResponseBody ResponseEntity<PlateauRO> getPlateau(@PathVariable int id) {
+		Plateau plateau = nasaService.findPlateau(id);
+		return ResponseEntity.ok(Converter.convert(plateau, PlateauRO.class));
+	}
+	
 }

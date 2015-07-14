@@ -1,5 +1,8 @@
 package com.elo7.marte.domain;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -19,6 +22,8 @@ import com.elo7.marte.domain.strategy.Strategy;
 import com.elo7.marte.domain.vo.CoordinatesVO;
 import com.elo7.marte.domain.vo.LatVO;
 import com.elo7.marte.domain.vo.LngVO;
+import com.elo7.marte.exception.BusinessException;
+import com.elo7.marte.exception.Error;
 
 @Entity
 @Table(name="EXPLORER")
@@ -31,11 +36,11 @@ public class Explorer {
 	
 	protected Explorer() {}
 	
-	public Explorer(Plateau plateau, CoordinatesVO coordinates, State state) {
+	public Explorer(Plateau plateau, CoordinatesVO coordinates, String state) {
 		super();
 		this.plateau = plateau;
 		this.coordinates = coordinates;
-		this.state = state;
+		this.state = StateFactory.directionFactory(state);
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -110,7 +115,7 @@ public class Explorer {
 		coordinates.setLng(new LngVO(lng));
 	}
 	
-	public Explorer move(String command) throws Exception {
+	public Explorer move(String command) {
 		Strategy strategy = strategy(command);
 		strategy.move();
 		return this;
@@ -126,6 +131,35 @@ public class Explorer {
 	
 	public Explorer save(ExplorerRepository repository) {
 		return repository.save(this);
+	}
+	
+	public Explorer validate() {
+		Set<Error> errors = new HashSet<Error>();
+		
+		if(plateau == null) {
+			errors.add(new Error("Plateau not found"));
+		}
+		if(coordinates.getLat().getValue() < 0) {
+			errors.add(new Error("The minimum lat of the explorer is 0"));
+		}
+		if(coordinates.getLng().getValue() < 0) {
+			errors.add(new Error("The minimum lng of the explorer is 0"));
+		}
+		
+		if(!errors.isEmpty()) {
+			throw new BusinessException(errors);
+		} else if(invalidCoordinates()) {
+			throw new BusinessException("Out of plateau range");
+		}
+		
+		return this;
+	}
+	
+	private boolean invalidCoordinates() {
+		return coordinates.getLat().isBiggerThan(plateau.getCoordinates().getLat())
+				|| coordinates.getLng().isBiggerThan(plateau.getCoordinates().getLng())
+				|| coordinates.getLat().isLessThan(LatVO.ZERO)
+				|| coordinates.getLng().isLessThan(LngVO.ZERO);
 	}
 
 }

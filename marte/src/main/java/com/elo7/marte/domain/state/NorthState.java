@@ -11,11 +11,6 @@ public class NorthState implements State {
 	}
 	
 	@Override
-	public boolean canMove(CoordinatesVO plateauCoordinates, CoordinatesVO coordinates) {
-		return plateauCoordinates.getLng().isBiggerThan(coordinates.getLng());
-	}
-
-	@Override
 	public String stateType() {
 		return Direction.NORTH.getValue();
 	}

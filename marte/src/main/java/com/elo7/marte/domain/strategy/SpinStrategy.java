@@ -1,7 +1,8 @@
 package com.elo7.marte.domain.strategy;
 
+import com.elo7.marte.domain.Command;
 import com.elo7.marte.domain.Explorer;
-import com.elo7.marte.domain.state.StateFactory;
+import com.elo7.marte.exception.BusinessException;
 
 public class SpinStrategy implements Strategy {
 	
@@ -15,8 +16,14 @@ public class SpinStrategy implements Strategy {
 	}
 	
 	@Override
-	public void move() throws Exception {
-		explorer.setState(StateFactory.commandFactory(explorer.getState(), command));
+	public void move() {
+		if(Command.RIGHT.getValue().equals(command)) {
+			explorer.setState(explorer.getState().rState());
+		} else if(Command.LEFT.getValue().equals(command)) {
+			explorer.setState(explorer.getState().lState());
+		} else {
+			throw new BusinessException("Invalid command");
+		}
 	}
 
 }

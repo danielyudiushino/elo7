@@ -32,5 +32,16 @@ public class LatVO {
 		return this.value < lat.value; 
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == this) {
+			return true;
+		}
+		if(obj instanceof LatVO) {
+			LatVO ob = (LatVO)obj;
+			return value==ob.value;
+		}
+		return false;
+	}
 
 }

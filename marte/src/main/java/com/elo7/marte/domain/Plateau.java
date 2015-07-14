@@ -1,5 +1,8 @@
 package com.elo7.marte.domain;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,6 +14,8 @@ import com.elo7.marte.domain.repository.PlateauRepository;
 import com.elo7.marte.domain.vo.CoordinatesVO;
 import com.elo7.marte.domain.vo.LatVO;
 import com.elo7.marte.domain.vo.LngVO;
+import com.elo7.marte.exception.BusinessException;
+import com.elo7.marte.exception.Error;
 
 @Entity
 @Table(name="PLATEAU")
@@ -73,6 +78,23 @@ public class Plateau {
 	
 	public Plateau save(PlateauRepository repository) {
 		return repository.save(this);
+	}
+	
+	public Plateau validate() {
+		Set<Error> errors = new HashSet<Error>();
+		
+		if(coordinates.getLat().getValue() <= 0) {
+			errors.add(new Error("The minimum lat of the plateau is 1"));
+		}
+		if(coordinates.getLng().getValue() <= 0) {
+			errors.add(new Error("The minimum lng of the plateau is 1"));
+		}
+		
+		if(!errors.isEmpty()) {
+			throw new BusinessException(errors);
+		}
+		
+		return this;
 	}
 
 }

@@ -1,5 +1,7 @@
 package com.elo7.marte.domain;
 
+import com.elo7.marte.exception.BusinessException;
+
 public enum Direction {
 	
 	NORTH("N"), SOUTH("S"), WEST("O"), EAST("L");
@@ -19,7 +21,7 @@ public enum Direction {
 			if(command.value.equals(value))
 				return command;
 		}
-		return null;
+		throw new BusinessException("Invalid direction");
 	}
 	
 }
