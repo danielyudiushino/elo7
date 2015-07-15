@@ -4,7 +4,7 @@ import com.elo7.marte.exception.BusinessException;
 
 public enum Direction {
 	
-	NORTH("N"), SOUTH("S"), WEST("O"), EAST("L");
+	NORTH("N"), SOUTH("S"), WEST("W"), EAST("E");
 
 	private String value;
 

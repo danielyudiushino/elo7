@@ -31,13 +31,13 @@ public class WhenYouSendADirection {
 	
 	@Test
 	public void theEastDirectionShouldByReturned() {
-		State state = StateFactory.directionFactory("L");
+		State state = StateFactory.directionFactory("E");
 		Assert.assertThat(state, CoreMatchers.instanceOf(EastState.class));
 	}
 	
 	@Test
 	public void theWestDirectionShouldByReturned() {
-		State state = StateFactory.directionFactory("O");
+		State state = StateFactory.directionFactory("W");
 		Assert.assertThat(state, CoreMatchers.instanceOf(WestState.class));
 	}
 	
