@@ -27,45 +27,42 @@ public class NasaResource {
 	private NasaService nasaService;
 
 	@RequestMapping(value = "/plateau", method = RequestMethod.POST)
-	@ResponseBody ResponseEntity<PlateauRO> createPlateau(@RequestBody PlateauRO input) {
-		Plateau plateau = nasaService.definePlateau(new CoordinatesVO(input.getLat(),	input.getLng()));
-		
-		final URI location = ServletUriComponentsBuilder
-	            .fromCurrentServletMapping().path("/plateau/{id}").build()
-	            .expand(plateau.getId()).toUri();
-		
+	@ResponseBody
+	ResponseEntity<PlateauRO> createPlateau(@RequestBody PlateauRO input) {
+		Plateau plateau = nasaService.definePlateau(new CoordinatesVO(input.getLat(), input.getLng()));
+		final URI location = ServletUriComponentsBuilder.fromCurrentServletMapping().path("/plateau/{id}").build().expand(plateau.getId()).toUri();
 		return ResponseEntity.created(location).body(Converter.convert(plateau, PlateauRO.class));
 	}
 
 	@RequestMapping(value = "/explorer", method = RequestMethod.POST)
-	@ResponseBody ResponseEntity<ExplorerRO> createExplorer(@RequestBody ExplorerRO input) {
-		Explorer explorer = nasaService.createExplorer(input.getPlateauId(),
-				new CoordinatesVO(input.getLat(), input.getLng()), input.getDirection());
-		
-		final URI location = ServletUriComponentsBuilder
-	            .fromCurrentServletMapping().path("/explorer/{id}").build()
-	            .expand(explorer.getId()).toUri();
-		
+	@ResponseBody
+	ResponseEntity<ExplorerRO> createExplorer(@RequestBody ExplorerRO input) {
+		Explorer explorer = nasaService.createExplorer(input.getPlateauId(), new CoordinatesVO(input.getLat(), input.getLng()), input.getDirection());
+		final URI location = ServletUriComponentsBuilder.fromCurrentServletMapping().path("/explorer/{id}").build().expand(explorer.getId()).toUri();
 		return ResponseEntity.created(location).body(Converter.convert(explorer, ExplorerRO.class));
 	}
 
 	@RequestMapping(value = "/explorer/{id}/move", method = RequestMethod.PUT)
-	@ResponseBody ResponseEntity<Void> move(@PathVariable int id, @RequestBody String command) throws Exception {
+	@ResponseBody
+	ResponseEntity<Void> move(@PathVariable int id, @RequestBody String command)
+			throws Exception {
 		Explorer explorer = nasaService.findExplorer(id);
 		nasaService.move(explorer, command);
 		return ResponseEntity.noContent().build();
 	}
 
 	@RequestMapping(value = "/explorer/{id}", method = RequestMethod.GET)
-	@ResponseBody ResponseEntity<ExplorerRO> getExplorer(@PathVariable int id) {
+	@ResponseBody
+	ResponseEntity<ExplorerRO> getExplorer(@PathVariable int id) {
 		Explorer explorer = nasaService.findExplorer(id);
 		return ResponseEntity.ok(Converter.convert(explorer, ExplorerRO.class));
 	}
-	
+
 	@RequestMapping(value = "/plateau/{id}", method = RequestMethod.GET)
-	@ResponseBody ResponseEntity<PlateauRO> getPlateau(@PathVariable int id) {
+	@ResponseBody
+	ResponseEntity<PlateauRO> getPlateau(@PathVariable int id) {
 		Plateau plateau = nasaService.findPlateau(id);
 		return ResponseEntity.ok(Converter.convert(plateau, PlateauRO.class));
 	}
-	
+
 }
